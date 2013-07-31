@@ -26,11 +26,13 @@ module WebTests
     def curl_check(url)
       Curl::Easy.new(url) do |curl|
         curl.ssl_verify_peer = false
+        curl.ssl_verify_host = false
+        #curl.verbose if $DEBUG
+        #curl.use_ssl = Curl::CURL_USESSL_NONE
         curl.perform
       end
     end
   end
-
 
 end
 
@@ -60,6 +62,16 @@ urls = {
   'ships' => 'http://staging.ships.lib.virginia.edu',
   'twain' => 'http://staging.twain.lib.virginia.edu',
   'womensbios' => 'http://staging.womensbios.lib.virginia.edu',
+  'cocoon' => 'http://sdsv1.its.virginia.edu:8080/cocoon/',
+  'geoserver' => 'http://sdsv1.its.virginia.edu:8080/geoserver/web/',
+  'metaphors_solr' => 'http://sdsv1.its.virginia.edu:8080/metaphors_solr/select/?q=food%0D%0A&version=2.2&start=0&rows=10&indent=on',
+  'solr' => 'http://sdsv1.its.virginia.edu:8080/solr/',
+  'numishare_solr' => 'http://sdsv1.its.virginia.edu:8080/solr/numishare-published/select/?q=*%3A*&version=2.2&start=0&rows=10&indent=on',
+  'faulkner_solr' => 'http://sdsv1.its.virginia.edu:8080/solr/faulkner/select/?q=*%3A*&version=2.2&start=0&rows=10&indent=on',
+  'latvian' => 'http://sdsv1.its.virginia.edu:8080/solr/latvian/select/?q=*%3A*&version=2.2&start=0&rows=10&indent=on',
+  'salem' => 'http://sdsv1.its.virginia.edu:8080/solr/salem/select/?q=*%3A*&version=2.2&start=0&rows=10&indent=on',
+  'salisbury' => 'http://sdsv1.its.virginia.edu:8080/solr/salisbury/select/?q=*%3A*&version=2.2&start=0&rows=10&indent=on',
+  'womensbios' => 'http://sdsv1.its.virginia.edu:8080/solr/womensbios/select/?q=*%3A*&version=2.2&start=0&rows=10&indent=on'
 
 }
 
@@ -69,6 +81,6 @@ puts ""
 ap "Errors:"
 
 errors.each do |project|
-  ap "#{project}"
+  ap "#{project}: #{urls[project]}"
 end
 
