@@ -3,7 +3,38 @@
 require 'curb'
 require 'awesome_print'
 
-projects = %w(abraham alumna )
+
+module WebTests
+
+  class Validation
+
+    def check_urls(urls = {})
+      errors = Array.new
+
+      urls.each do |project, url|
+        result = curl_check(url)
+        errors.push(project) unless result.response_code == 200
+        ap "#{project}, #{result.total_time}, #{result.response_code}" if $DEBUG
+      end
+
+      errors
+
+    end
+
+    private
+
+    def curl_check(url)
+      Curl::Easy.new(url) do |curl|
+        curl.ssl_verify_peer = false
+        curl.perform
+      end
+    end
+  end
+
+
+end
+
+$DEBUG = true
 
 urls = {
   'abraham' => 'http://staging.abraham.lib.virginia.edu',
@@ -23,7 +54,8 @@ urls = {
   'metaphors' => 'http://staging.metaphors.lib.virginia.edu',
   'ovid' => 'http://staging.ovid.lib.virginia.edu',
   'prosody' => 'http://staging.prosody.lib.virginia.edu',
-  'prosody-iframe' => 'http://staging.prosody.lib.virginia.edu:8080/prosody/exercise.jsp?poem=Wordsworth%20-%20A%20Slumber%20Did%20My%20Spirit%20Seal.xml',
+  'prosody-iframe' => 'http://sdsv1.its.virginia.edu:8080/prosody/exercise.jsp?poem=Wordsworth%20-%20A%20Slumber%20Did%20My%20Spirit%20Seal.xml',
+  #'prosody-iframe' => 'http://staging.prosody.lib.virginia.edu:8080/prosody/exercise.jsp?poem=Wordsworth%20-%20A%20Slumber%20Did%20My%20Spirit%20Seal.xml',
   'salem' => 'http://salem.lib.virginia.edu/texts/tei/BoySalCombined',
   'ships' => 'http://staging.ships.lib.virginia.edu',
   'twain' => 'http://staging.twain.lib.virginia.edu',
@@ -31,19 +63,7 @@ urls = {
 
 }
 
-errors = Array.new
-
-urls.each do |project, url|
-
-  http = Curl::Easy.new(url) do |curl|
-    curl.ssl_verify_peer = false
-    curl.perform
-  end
-
-  ap "Testing #{project}"
-  errors.push(project) unless http.response_code == 200
-
-end
+errors = WebTests::Validation.new.check_urls(urls)
 
 puts ""
 ap "Errors:"
@@ -51,3 +71,4 @@ ap "Errors:"
 errors.each do |project|
   ap "#{project}"
 end
+
